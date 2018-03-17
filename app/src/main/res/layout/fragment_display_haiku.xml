@@ -7,32 +7,35 @@
 
     <TextView
         android:id="@+id/display_haiku_line1"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:gravity="center"
-        android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
-        android:text="@string/display_haiku_line1_text" />
+        android:layout_marginStart="4dp"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="@string/display_haiku_line1_text"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
         android:id="@+id/display_haiku_line2"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:gravity="center"
-        android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
-        android:text="@string/display_haiku_line2_text" />
+        android:layout_marginStart="4dp"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="@string/display_haiku_line2_text"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
         android:id="@+id/display_haiku_line3"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:gravity="center"
-        android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
-        android:text="@string/display_haiku_line3_text" />
+        android:layout_marginStart="4dp"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:text="@string/display_haiku_line3_text"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </LinearLayout>

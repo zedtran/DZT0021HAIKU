@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.util.NoSuchPropertyException;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +22,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.NoSuchElementException;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+
 
 
 
@@ -199,6 +201,75 @@ public class MainMenuFragment extends Fragment {
                     item = "ERROR: NOTHING TO REMOVE!";
                     makeToast(item);
                 }
+
+            }
+        });
+
+        mDisplayHaikuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*
+                DisplayFragment fragment = new DisplayFragment();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, fragment);
+                fragmentTransaction.addToBackStack("mainMenuFragment");
+                fragmentTransaction.commit();
+                */
+
+               /*
+                Bundle haikuBundle = new Bundle();
+
+                List<Pair<String, Integer>> first = mHaiku.getP1Pair();
+                List<Pair<String, Integer>> second = mHaiku.getP2Pair();
+                List<Pair<String, Integer>> third = mHaiku.getP3Pair();
+
+                ArrayList<String> p1wordArrList = new ArrayList<>();
+                ArrayList<String> p2wordArrList = new ArrayList<>();
+                ArrayList<String> p3wordArrList = new ArrayList<>();
+
+                if(first.size() > 0) {
+
+                    for (Pair<String, Integer> p: first) {
+                        p1wordArrList.add(p.first);
+                    }
+
+                    haikuBundle.putStringArrayList("p1wal", p1wordArrList);
+                }
+
+                if(second.size() > 0) {
+
+                    for (Pair<String, Integer> p: second) {
+                        p2wordArrList.add(p.first);
+                    }
+                    haikuBundle.putStringArrayList("p2wal", p2wordArrList);
+                }
+
+                if(third.size() > 0) {
+
+                    for (Pair<String, Integer> p: third) {
+                        p3wordArrList.add(p.first);
+                    }
+
+                    haikuBundle.putStringArrayList("p3wal", p3wordArrList);
+                }
+
+                */
+
+                DisplayFragment displayFragment = new DisplayFragment();
+
+                displayFragment.mHaikuLine1Text.setText(mHaiku.getPhraseOneAsString());
+                displayFragment.mHaikuLine2Text.setText(mHaiku.getPhraseTwoAsString());
+                displayFragment.mHaikuLine3Text.setText(mHaiku.getPhraseThreeAsString());
+
+
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.fragment_container, displayFragment);
+                fragmentTransaction.addToBackStack("mainMenuFragment");
+                fragmentTransaction.commit();
+
+
 
             }
         });

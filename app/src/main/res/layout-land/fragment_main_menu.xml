@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/fragment_main_menu"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="4"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/fragment_main_layout_top"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.4"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/adjectives_radio_button"
+            android:layout_width="200dp"
+            android:layout_height="25dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="@string/adjectives_button_text" />
+
+        <RadioButton
+            android:id="@+id/nouns_radio_button"
+            android:layout_width="200dp"
+            android:layout_height="25dp"
+            android:layout_alignEnd="@+id/adjectives_radio_button"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/adjectives_radio_button"
+            android:text="@string/nouns_button_text" />
+
+        <RadioButton
+            android:id="@+id/verbs_radio_button"
+            android:layout_width="200dp"
+            android:layout_height="25dp"
+            android:layout_alignEnd="@+id/nouns_radio_button"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/nouns_radio_button"
+            android:text="@string/verbs_button_text" />
+
+        <RadioButton
+            android:id="@+id/others_radio_button"
+            android:layout_width="200dp"
+            android:layout_height="25dp"
+            android:layout_alignEnd="@+id/verbs_radio_button"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/verbs_radio_button"
+            android:text="@string/others_button_text" />
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="300dp"
+            android:layout_height="25dp"
+            android:layout_above="@+id/add_to_haiku_button"
+            android:layout_alignEnd="@+id/add_to_haiku_button"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="40dp"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/add_to_haiku_button"
+            android:layout_width="220dp"
+            android:layout_height="70dp"
+            android:layout_alignBottom="@+id/others_radio_button"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:gravity="center"
+            android:text="@string/add_to_haiku_button_text"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/screen_separator_1"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:background="@android:color/darker_gray"/>
+
+    <RelativeLayout
+        android:id="@+id/fragment_main_layout_middle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.65"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/delete_last_button"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="@string/delete_button_text"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/haiku_line1_label"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:text="@string/haiku_line1_label_text" />
+
+        <TextView
+            android:id="@+id/haiku_line2_label"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/haiku_line1_label"
+            android:gravity="center"
+            android:text="@string/haiku_line2_label_text" />
+
+        <TextView
+            android:id="@+id/haiku_line3_label"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/haiku_line2_label"
+            android:gravity="center"
+            android:text="@string/haiku_line3_label_text" />
+
+        <TextView
+            android:id="@+id/haiku_line1"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_above="@+id/haiku_line2_label"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/haiku_line1_label"
+            android:gravity="center|start"
+            android:text="@string/haiku_line1_text" />
+
+        <TextView
+            android:id="@+id/haiku_line2"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_above="@+id/haiku_line3_label"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/haiku_line1_label"
+            android:layout_toEndOf="@+id/haiku_line1_label"
+            android:gravity="center|start"
+            android:text="@string/haiku_line2_text" />
+
+        <TextView
+            android:id="@+id/haiku_line3"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:layout_alignBottom="@+id/haiku_line3_label"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/haiku_line2"
+            android:layout_toEndOf="@+id/haiku_line3_label"
+            android:gravity="center|start"
+            android:text="@string/haiku_line3_text" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/screen_separator_2"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:background="#ff888888"/>
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:id="@+id/fragment_main_layout_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.22" >
+
+        <Button
+            android:id="@+id/start_over_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="140dp"
+            android:gravity="center"
+            android:visibility="invisible"
+            android:text="@string/start_over_button_text" />
+
+        <Button
+            android:id="@+id/display_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="16dp"
+            android:layout_toEndOf="@+id/start_over_button"
+            android:gravity="center"
+            android:visibility="invisible"
+            android:text="@string/display_haiku_button_text" />
+    </RelativeLayout>
+
+</LinearLayout>

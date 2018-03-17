@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DZT0021Haiku</string>
+    <string name="adjectives_button_text">Adjectives</string>
+    <string name="nouns_button_text">Nouns</string>
+    <string name="verbs_button_text">Verbs</string>
+    <string name="others_button_text">Others</string>
+    <string name="add_to_haiku_button_text"> </string>
+    <string name="haiku_line1_label_text"> 1) </string>
+    <string name="haiku_line2_label_text"> 2) </string>
+    <string name="haiku_line3_label_text"> 3) </string>
+    <string name="haiku_line1_text"> </string>
+    <string name="haiku_line2_text"> </string>
+    <string name="haiku_line3_text"> </string>
+    <string name="delete_button_text">DELETE THE LAST WORD ADDED</string>
+    <string name="start_over_button_text">START OVER</string>
+    <string name="display_haiku_button_text">DISPLAY</string>
+</resources>
+

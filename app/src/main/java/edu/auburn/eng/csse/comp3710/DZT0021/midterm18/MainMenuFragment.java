@@ -54,13 +54,13 @@ public class MainMenuFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        Log.d(LOG_TAG, "Fragment.onCreate");
+        Log.d(LOG_TAG, "MainMenuFragment.onCreate");
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "Fragment.onCreateView");
+        Log.d(LOG_TAG, "MainMenuFragment.onCreateView");
 
         View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
 
@@ -339,7 +339,7 @@ public class MainMenuFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Log.d(LOG_TAG, "Fragment.onViewCreated");
+        Log.d(LOG_TAG, "MainMenuFragment.onViewCreated");
 
     }
 
@@ -350,7 +350,7 @@ public class MainMenuFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
 
-        Log.d(LOG_TAG, "Fragment.onAttach");
+        Log.d(LOG_TAG, "MainMenuFragment.onAttach");
 
 
     }
@@ -365,7 +365,7 @@ public class MainMenuFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
 
-        Log.d(LOG_TAG, "Fragment.onDetach");
+        Log.d(LOG_TAG, "MainMenuFragment.onDetach");
         mNounsButton.setOnClickListener(null);
         mVerbsButton.setOnClickListener(null);
         mAdjectivesButton.setOnClickListener(null);
@@ -383,7 +383,7 @@ public class MainMenuFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Log.d(LOG_TAG, "Fragment.onActivityCreated");
+        Log.d(LOG_TAG, "MainMenuFragment.onActivityCreated");
 
         int resIDtoResize = -1;
 
@@ -499,7 +499,7 @@ public class MainMenuFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(LOG_TAG, "Fragment.onSaveInstanceState");
+        Log.d(LOG_TAG, "MainMenuFragment.onSaveInstanceState");
 
         List<Pair<String, Integer>> first = mHaiku.getP1Pair();
         List<Pair<String, Integer>> second = mHaiku.getP2Pair();
@@ -563,11 +563,11 @@ public class MainMenuFragment extends Fragment {
 
 
     /*
-     *
+     * Events that are triggered after each add to Haiku button press
      */
     private void addToHaikuButtonEvents() {
 
-        Log.d(LOG_TAG, "Fragment.addToHaikuButtonEvents (PRIVATE METHOD)");
+        Log.d(LOG_TAG, "MainMenuFragment.addToHaikuButtonEvents (PRIVATE METHOD)");
 
         // Conditional check for pass/fail
         boolean fail = false;
@@ -608,10 +608,10 @@ public class MainMenuFragment extends Fragment {
         String[] resArr = getResources().getStringArray(resID);
 
 
-        // Our spinner dropdown menu adapter
+        // Our new spinner adapter
         ArrayAdapter<String> mSpinnerAdapterRes;
 
-        // The list we will use to populate the spinner
+        // The list we will use to populate the spinner adapter
         List<String> resArr_list = new ArrayList<>();
 
 
@@ -619,6 +619,7 @@ public class MainMenuFragment extends Fragment {
             (1) Go through all the words in the specified resource
             (2) Identify a match for our cross-reference
             (3) Eliminate words that don't fit the appropriate phrase
+            (4) Add words that DO fit to a new list
          */
         for(int i = 0; i < resArr.length; i++) {
 
@@ -664,49 +665,59 @@ public class MainMenuFragment extends Fragment {
         // If the word that was chosen to be added was not found in the list,
         // we have a resource problem our have chosen to use the wrong list
         if (selectedWord == null) {
-            Log.e("\n\nAdd to Haiku Event Error", "Selected word from chosen resource was not found");
+            Log.e("\n\nAdd to Haiku Event Error", "Selected word from chosen resource was not found\n\n");
             throw new NoSuchElementException();
         }
 
-
-        // TRYING NEW ADAPTER
-        //mSpinnerAdapterRes = new ArrayAdapter<>(getActivity().getBaseContext(), android.R.layout.simple_spinner_item, resArr_list);
-
+        // Populate the adapter with our newly created list and assign the adapter to our spinner
         mSpinnerAdapterRes = new ArrayAdapter<>(MainMenuFragment.this.getContext(), android.R.layout.simple_list_item_1, resArr_list);
         mSpinnerAdapterRes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinner.setAdapter(mSpinnerAdapterRes);
         mSpinnerAdapterRes.notifyDataSetChanged();
 
-
-
+        // Starting from phrase 1 to phrase 3
+        // If the word syllable count fits in to phrase 1, proceed
         if(mHaiku.getphraseOneSyllableCount() < 5) {
-
+            // calls on our model's method to add and return boolean value
+            // performs a secondary pass/fail check to see if the word fits in the specified phrase
             if (mHaiku.addToPhraseOne(selectedWord)) {
+
                 mHaikuLine1.setText(mHaiku.getPhraseOneAsString());
 
+                // If phrase 1 is full, perform a list reset for phrase 2
                 if(mHaiku.getphraseOneSyllableCount() == 5) {
                     radioButtonEvents(resID);
                 }
             }
         }
+        // OR If the word syllable count fits in to phrase 2, proceed
         else if(mHaiku.getphraseTwoSyllableCount() < 7) {
-
+            // calls on our model's method to add and return boolean value
+            // performs a secondary pass/fail check to see if the word fits in the specified phrase
             if (mHaiku.addToPhraseTwo(selectedWord)) {
+
                 mHaikuLine2.setText(mHaiku.getPhraseTwoAsString());
 
+                // If phrase 2 is full, perform a list reset for phrase 3
                 if(mHaiku.getphraseTwoSyllableCount() == 7) {
                     radioButtonEvents(resID);
                 }
             }
 
         }
+        // OR If the word syllable count fits in to phrase 3, proceed
         else if(mHaiku.getphraseThreeSyllableCount() < 5) {
-
+            // calls on our model's method to add and return boolean value
+            // performs a secondary pass/fail check to see if the word fits in the specified phrase
             if (mHaiku.addToPhraseThree(selectedWord)) {
+
                 mHaikuLine3.setText(mHaiku.getPhraseThreeAsString());
 
+                // If phrase 3 is full, reset the list to prep for adding again -- once words get deleted
                 if(mHaiku.getphraseThreeSyllableCount() == 5) {
                     radioButtonEvents(resID);
+
+                    // ALSO disable these buttons cause we can't if our Haiku is complete
                     mAddToHaikuButton.setEnabled(false);
                     mSpinner.setEnabled(false);
                 }
@@ -722,7 +733,8 @@ public class MainMenuFragment extends Fragment {
         /* If we added successfully to the Haiku and these buttons are not usable, make them usable */
         if(!fail) {
 
-            if (mHaiku.getphraseOneSyllableCount() >= 0 && mHaiku.getphraseThreeSyllableCount() < 7) {
+            if (mHaiku.getphraseOneSyllableCount() >= 0 && mHaiku.getphraseThreeSyllableCount() < 5) {
+
                 if(mDeleteLastWordButton.getVisibility() == View.INVISIBLE || !mDeleteLastWordButton.isEnabled() || !mDeleteLastWordButton.isClickable()) {
                     mDeleteLastWordButton.setVisibility(View.VISIBLE);
                     mDeleteLastWordButton.setEnabled(true);
@@ -755,27 +767,27 @@ public class MainMenuFragment extends Fragment {
     }
 
     private void radioButtonEvents(int resID) {
-        Log.d(LOG_TAG, "Fragment.radioButtonEvents (PRIVATE METHOD)");
+        Log.d(LOG_TAG, "MainMenuFragment.radioButtonEvents (PRIVATE METHOD)");
 
         try {
 
-            // Show and enable the spinner
-            if (mSpinner.getVisibility() == View.INVISIBLE || !mSpinner.isEnabled()) {
-                if (mHaiku.getphraseOneSyllableCount() >= 0 && mHaiku.getphraseThreeSyllableCount() < 7) {
-                    mSpinner.setVisibility(View.VISIBLE);
-                    mSpinner.setEnabled(true);
+
+            // If we can put words in the Haiku, if spinner and add are disabled, re-enable
+            if (mHaiku.getphraseOneSyllableCount() >= 0 && mHaiku.getphraseThreeSyllableCount() < 5) {
+                // Show and enable the spinner
+                if (mSpinner.getVisibility() == View.INVISIBLE || !mSpinner.isEnabled()) {
+                        mSpinner.setVisibility(View.VISIBLE);
+                        mSpinner.setEnabled(true);
                 }
 
-            }
-
-            // show and enable the add button
-            if (mAddToHaikuButton.getVisibility() == View.INVISIBLE || !mAddToHaikuButton.isEnabled()) {
-                if (mHaiku.getphraseOneSyllableCount() >= 0 && mHaiku.getphraseThreeSyllableCount() < 7) {
-                    mAddToHaikuButton.setVisibility(View.VISIBLE);
-                    mAddToHaikuButton.setEnabled(true);
+                // show and enable the add button
+                if (mAddToHaikuButton.getVisibility() == View.INVISIBLE || !mAddToHaikuButton.isEnabled()) {
+                        mAddToHaikuButton.setVisibility(View.VISIBLE);
+                        mAddToHaikuButton.setEnabled(true);
                 }
-
             }
+
+
 
             String[] resArr = getResources().getStringArray(resID);
             int itemSyllableCount;
@@ -806,10 +818,6 @@ public class MainMenuFragment extends Fragment {
                         resArr_list.remove(i);
                     }
                 }
-
-
-                // TRYING NEW ADAPTER
-                //mSpinnerAdapterRes = new ArrayAdapter<>(getActivity().getBaseContext(), android.R.layout.simple_spinner_item, resArr_list);
 
                 mSpinnerAdapterRes = new ArrayAdapter<>(MainMenuFragment.this.getContext(), android.R.layout.simple_list_item_1, resArr_list);
 

@@ -15,5 +15,8 @@
     <string name="delete_button_text">DELETE THE LAST WORD ADDED</string>
     <string name="start_over_button_text">START OVER</string>
     <string name="display_haiku_button_text">DISPLAY</string>
+    <string name="display_haiku_line1_text"> </string>
+    <string name="display_haiku_line2_text"> </string>
+    <string name="display_haiku_line3_text"> </string>
 </resources>
 

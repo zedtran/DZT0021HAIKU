@@ -56,7 +56,7 @@
             android:layout_alignEnd="@+id/add_to_haiku_button"
             android:layout_alignParentTop="true"
             android:layout_marginEnd="40dp"
-            android:gravity="center|end"
+            android:textAlignment="textEnd"
             android:visibility="invisible" />
 
         <Button
@@ -175,7 +175,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:layout_marginStart="80dp"
             android:gravity="center"
             android:text="@string/start_over_button_text"
             android:visibility="invisible" />
@@ -186,8 +185,7 @@
             android:layout_height="wrap_content"
             android:layout_alignBaseline="@+id/start_over_button"
             android:layout_alignBottom="@+id/start_over_button"
-            android:layout_marginStart="17dp"
-            android:layout_toEndOf="@+id/start_over_button"
+            android:layout_alignParentEnd="true"
             android:gravity="center"
             android:text="@string/display_haiku_button_text"
             android:visibility="invisible" />

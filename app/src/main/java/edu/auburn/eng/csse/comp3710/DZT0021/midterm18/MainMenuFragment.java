@@ -4,7 +4,6 @@ package edu.auburn.eng.csse.comp3710.DZT0021.midterm18;
  * Created by donaldtran on 3/15/18.
  */
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import android.content.Context;
 import android.os.Bundle;
@@ -24,7 +23,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.NoSuchElementException;
-import java.util.concurrent.CopyOnWriteArrayList;
+
 
 
 public class MainMenuFragment extends Fragment {
@@ -307,20 +306,74 @@ public class MainMenuFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                // The resource ID we will use -- default to -1
+                int resID = -1;
 
+                // The resource array as reference
+                String[] arrayReference;
+
+                String selectedWord = null;
+
+                // The syllable count for the selected word
+                int selectionSyllableCount = 0;
+
+                // The word we chose to add for comparing against resource
+                String crossReference = mSpinner.getSelectedItem().toString();
+
+                // The resource being utilized
+                if (mNounsButton.isChecked()) {
+
+                    resID = R.array.nouns;
+                }
+                else if (mVerbsButton.isChecked()) {
+
+                    resID = R.array.verbs;
+                }
+                else if (mAdjectivesButton.isChecked()) {
+
+                    resID = R.array.adjectives;
+                }
+                else if (mOthersButton.isChecked()) {
+
+                    resID = R.array.other;
+                }
+
+                arrayReference = getResources().getStringArray(resID);
+
+                // Parsing out to the get the int value from our reference
+                for (String s: arrayReference) {
+                    if (s.substring(1, s.length()).equals(crossReference)) {
+                        selectedWord = s;
+                        selectionSyllableCount = Integer.parseInt(s.substring(0, 1));
+                        break;
+                    }
+                }
+
+
+                // Starting with phrase 1 to 3
                 if(mHaiku.getphraseOneSyllableCount() < 5 ) {
 
-                    addToHaikuButtonEvents();
+
+                    // proceed to add the selected word
+                    addToHaikuButtonEvents(selectedWord, selectionSyllableCount, arrayReference, resID, crossReference);
+
 
                 }
                 else if (mHaiku.getphraseTwoSyllableCount() < 7) {
 
-                    addToHaikuButtonEvents();
+
+
+                    // proceed to add the selected word
+                    addToHaikuButtonEvents(selectedWord, selectionSyllableCount, arrayReference, resID, crossReference);
+
+
 
                 }
                 else if (mHaiku.getphraseThreeSyllableCount() < 5) {
 
-                    addToHaikuButtonEvents();
+                    // proceed to add the selected word
+                    addToHaikuButtonEvents(selectedWord, selectionSyllableCount, arrayReference, resID, crossReference);
+
                 }
             }
         });
@@ -565,48 +618,14 @@ public class MainMenuFragment extends Fragment {
     /*
      * Events that are triggered after each add to Haiku button press
      */
-    private void addToHaikuButtonEvents() {
+    private void addToHaikuButtonEvents(String selectedWord, int sWordSyllableCount, String[] resArr, int resID, String crossReference) {
 
         Log.d(LOG_TAG, "MainMenuFragment.addToHaikuButtonEvents (PRIVATE METHOD)");
 
         // Conditional check for pass/fail
         boolean fail = false;
 
-        // The word we chose to add for comparing against resource
-        String crossReference = mSpinner.getSelectedItem().toString();
-
-        // The word we chose from resource, needed for adding to the HaikuModel
-        String selectedWord = null;
-
-        // The R.array.xxx value we need, based on the selected button
-        int resID = -1;
-
         int itemSyllableCount;
-
-        if (mNounsButton.isChecked()) {
-
-            resID = R.array.nouns;
-        }
-        else if (mVerbsButton.isChecked()) {
-
-            resID = R.array.verbs;
-        }
-        else if (mAdjectivesButton.isChecked()) {
-
-            resID = R.array.adjectives;
-        }
-        else if (mOthersButton.isChecked()) {
-
-            resID = R.array.other;
-        }
-
-        if (resID == -1) {
-            throw new NoSuchPropertyException("Attempted to add to Haiku, but no Radio Button was selected");
-        }
-
-        // The array as it should be in resource
-        String[] resArr = getResources().getStringArray(resID);
-
 
         // Our new spinner adapter
         ArrayAdapter<String> mSpinnerAdapterRes;
@@ -624,12 +643,6 @@ public class MainMenuFragment extends Fragment {
         for(int i = 0; i < resArr.length; i++) {
 
             itemSyllableCount = Integer.parseInt(resArr[i].substring(0, 1));
-
-            // parsing out the word we need, which includes the integer value (IF FOUND)
-            if (resArr[i].substring(1, resArr[i].length()).equals(crossReference)) {
-                selectedWord = resArr[i];
-            }
-
             lastKnownSyllableCount = itemSyllableCount;
 
             // If phrase 1 hasn't been completed
@@ -661,66 +674,77 @@ public class MainMenuFragment extends Fragment {
             }
         }
 
-
         // If the word that was chosen to be added was not found in the list,
         // we have a resource problem our have chosen to use the wrong list
-        if (selectedWord == null) {
+        if (selectedWord == null || sWordSyllableCount == -1) {
             Log.e("\n\nAdd to Haiku Event Error", "Selected word from chosen resource was not found\n\n");
             throw new NoSuchElementException();
         }
 
-        // Populate the adapter with our newly created list and assign the adapter to our spinner
+
+        // Proceed to populate the adapter with our newly created list and assign the adapter to our spinner
         mSpinnerAdapterRes = new ArrayAdapter<>(MainMenuFragment.this.getContext(), android.R.layout.simple_list_item_1, resArr_list);
         mSpinnerAdapterRes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinner.setAdapter(mSpinnerAdapterRes);
         mSpinnerAdapterRes.notifyDataSetChanged();
 
-        // Starting from phrase 1 to phrase 3
+
+        // NOW, Starting from phrase 1 to phrase 3
         // If the word syllable count fits in to phrase 1, proceed
         if(mHaiku.getphraseOneSyllableCount() < 5) {
-            // calls on our model's method to add and return boolean value
+
+            // calls on our model's method to add to and return a boolean value
             // performs a secondary pass/fail check to see if the word fits in the specified phrase
             if (mHaiku.addToPhraseOne(selectedWord)) {
 
                 mHaikuLine1.setText(mHaiku.getPhraseOneAsString());
 
-                // If phrase 1 is full, perform a list reset for phrase 2
-                if(mHaiku.getphraseOneSyllableCount() == 5) {
+                // reset the list for phrase 2
+                if (mHaiku.getphraseOneSyllableCount() == 5 || mHaiku.getphraseOneSyllableCount() + sWordSyllableCount > 5) {
                     radioButtonEvents(resID);
                 }
+
             }
         }
         // OR If the word syllable count fits in to phrase 2, proceed
         else if(mHaiku.getphraseTwoSyllableCount() < 7) {
-            // calls on our model's method to add and return boolean value
+            // calls on our model's method to add to and return a boolean value
             // performs a secondary pass/fail check to see if the word fits in the specified phrase
             if (mHaiku.addToPhraseTwo(selectedWord)) {
 
                 mHaikuLine2.setText(mHaiku.getPhraseTwoAsString());
 
-                // If phrase 2 is full, perform a list reset for phrase 3
-                if(mHaiku.getphraseTwoSyllableCount() == 7) {
+                // reset the list for phrase 3
+                if(mHaiku.getphraseTwoSyllableCount() == 7 || (mHaiku.getphraseTwoSyllableCount() + sWordSyllableCount > 7)) {
                     radioButtonEvents(resID);
                 }
+
             }
 
         }
         // OR If the word syllable count fits in to phrase 3, proceed
         else if(mHaiku.getphraseThreeSyllableCount() < 5) {
-            // calls on our model's method to add and return boolean value
+            // calls on our model's method to add to and return a boolean value
             // performs a secondary pass/fail check to see if the word fits in the specified phrase
             if (mHaiku.addToPhraseThree(selectedWord)) {
 
                 mHaikuLine3.setText(mHaiku.getPhraseThreeAsString());
 
-                // If phrase 3 is full, reset the list to prep for adding again -- once words get deleted
-                if(mHaiku.getphraseThreeSyllableCount() == 5) {
-                    radioButtonEvents(resID);
 
+
+                // reset the list if
+                if(mHaiku.getphraseThreeSyllableCount() + sWordSyllableCount > 5) {
+                    radioButtonEvents(resID);
+                }
+
+
+                // Disable if we finished the Haiku
+                if(mHaiku.getphraseThreeSyllableCount() == 5) {
                     // ALSO disable these buttons cause we can't if our Haiku is complete
                     mAddToHaikuButton.setEnabled(false);
                     mSpinner.setEnabled(false);
                 }
+
             }
 
         }
@@ -767,10 +791,16 @@ public class MainMenuFragment extends Fragment {
     }
 
     private void radioButtonEvents(int resID) {
+
         Log.d(LOG_TAG, "MainMenuFragment.radioButtonEvents (PRIVATE METHOD)");
 
-        try {
 
+        String[] resArr = getResources().getStringArray(resID);
+        int itemSyllableCount;
+        ArrayAdapter<String> mSpinnerAdapterRes;
+        List<String> resArr_list = new ArrayList<>();
+
+        try {
 
             // If we can put words in the Haiku, if spinner and add are disabled, re-enable
             if (mHaiku.getphraseOneSyllableCount() >= 0 && mHaiku.getphraseThreeSyllableCount() < 5) {
@@ -787,18 +817,8 @@ public class MainMenuFragment extends Fragment {
                 }
             }
 
-
-
-            String[] resArr = getResources().getStringArray(resID);
-            int itemSyllableCount;
-            //CopyOnWriteArrayList<String> resArr_list;
-            ArrayAdapter<String> mSpinnerAdapterRes;
-            List<String> resArr_list;
-
             // Phrase 1 constraints
-            if(mHaiku.getphraseOneSyllableCount() < 5
-                    && mHaiku.getphraseTwoSyllableCount() == 0
-                    && mHaiku.getphraseThreeSyllableCount() == 0) {
+            if(mHaiku.getphraseOneSyllableCount() < 5) {
 
                 for(int i = 0; i < resArr.length; i++) {
                     itemSyllableCount = Integer.parseInt(resArr[i].substring(0, 1));
@@ -808,31 +828,13 @@ public class MainMenuFragment extends Fragment {
 
                     if(resArr[i] != null) {
                         resArr[i] = resArr[i].substring(1, resArr[i].length());
+                        resArr_list.add(resArr[i]);
                     }
                 }
-
-                resArr_list = new CopyOnWriteArrayList<>(Arrays.asList(resArr));
-
-                for (int i = 0; i < resArr_list.size(); i++) {
-                    if (resArr_list.get(i) == null) {
-                        resArr_list.remove(i);
-                    }
-                }
-
-                mSpinnerAdapterRes = new ArrayAdapter<>(MainMenuFragment.this.getContext(), android.R.layout.simple_list_item_1, resArr_list);
-
-                mSpinnerAdapterRes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                mSpinner.setAdapter(mSpinnerAdapterRes);
-
-                mSpinnerAdapterRes.notifyDataSetChanged();
-
 
             }
             // phrase 2 constraints
-            else if(mHaiku.getphraseOneSyllableCount() == 5
-                    && mHaiku.getphraseTwoSyllableCount() < 7
-                    && mHaiku.getphraseThreeSyllableCount() == 0) {
+            else if(mHaiku.getphraseTwoSyllableCount() < 7) {
 
                 for(int i = 0; i < resArr.length; i++) {
                     itemSyllableCount = Integer.parseInt(resArr[i].substring(0, 1));
@@ -842,32 +844,13 @@ public class MainMenuFragment extends Fragment {
 
                     if(resArr[i] != null) {
                         resArr[i] = resArr[i].substring(1, resArr[i].length());
+                        resArr_list.add(resArr[i]);
                     }
                 }
 
-                resArr_list = new CopyOnWriteArrayList<>(Arrays.asList(resArr));
-
-                for (int i = 0; i < resArr_list.size(); i++) {
-                    if (resArr_list.get(i) == null) {
-                        resArr_list.remove(i);
-                    }
-                }
-
-                // TRYING NEW ADAPTER
-                //mSpinnerAdapterRes = new ArrayAdapter<>(getActivity().getBaseContext(), android.R.layout.simple_spinner_item, resArr_list);
-
-                mSpinnerAdapterRes = new ArrayAdapter<>(MainMenuFragment.this.getContext(), android.R.layout.simple_list_item_1, resArr_list);
-
-                mSpinnerAdapterRes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                mSpinner.setAdapter(mSpinnerAdapterRes);
-
-                mSpinnerAdapterRes.notifyDataSetChanged();
             }
             // Phrase 3 constraints
-            else if(mHaiku.getphraseOneSyllableCount() == 5
-                    && mHaiku.getphraseTwoSyllableCount() == 7
-                    && mHaiku.getphraseThreeSyllableCount() < 5) {
+            else if(mHaiku.getphraseThreeSyllableCount() < 5) {
 
                 for(int i = 0; i < resArr.length; i++) {
                     itemSyllableCount = Integer.parseInt(resArr[i].substring(0, 1));
@@ -877,28 +860,19 @@ public class MainMenuFragment extends Fragment {
 
                     if(resArr[i] != null) {
                         resArr[i] = resArr[i].substring(1, resArr[i].length());
+                        resArr_list.add(resArr[i]);
                     }
                 }
 
-                resArr_list = new CopyOnWriteArrayList<>(Arrays.asList(resArr));
-
-                for (int i = 0; i < resArr_list.size(); i++) {
-                    if (resArr_list.get(i) == null) {
-                        resArr_list.remove(i);
-                    }
-                }
-
-                // TRYING NEW ADAPTER
-                //mSpinnerAdapterRes = new ArrayAdapter<>(getActivity().getBaseContext(), android.R.layout.simple_spinner_item, resArr_list);
-
-                mSpinnerAdapterRes = new ArrayAdapter<>(MainMenuFragment.this.getContext(), android.R.layout.simple_list_item_1, resArr_list);
-
-                mSpinnerAdapterRes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                mSpinner.setAdapter(mSpinnerAdapterRes);
-
-                mSpinnerAdapterRes.notifyDataSetChanged();
             }
+
+            mSpinnerAdapterRes = new ArrayAdapter<>(MainMenuFragment.this.getContext(), android.R.layout.simple_list_item_1, resArr_list);
+
+            mSpinnerAdapterRes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            mSpinner.setAdapter(mSpinnerAdapterRes);
+
+            mSpinnerAdapterRes.notifyDataSetChanged();
 
         }
         catch (Exception e) {

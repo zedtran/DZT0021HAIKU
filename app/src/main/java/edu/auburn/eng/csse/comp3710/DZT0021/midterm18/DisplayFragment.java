@@ -3,14 +3,14 @@ package edu.auburn.eng.csse.comp3710.DZT0021.midterm18;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Pair;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.util.Log;
-import java.util.ArrayList;
-import java.util.List;
+import android.view.KeyEvent;
+
 
 
 /**
@@ -19,6 +19,8 @@ import java.util.List;
 
 public class DisplayFragment extends Fragment {
 
+
+
     protected TextView mHaikuLine1Text;
     protected TextView mHaikuLine2Text;
     protected TextView mHaikuLine3Text;
@@ -26,48 +28,39 @@ public class DisplayFragment extends Fragment {
 
     private static final String LOG_TAG = DisplayFragment.class.getSimpleName() + "_TAG";
 
-    private static final String P1_WAL = "p1wal";
-    private static final String P2_WAL = "p2wal";
-    private static final String P3_WAL = "p3wal";
-
-    protected ArrayList<String> p1wal = new ArrayList<>();
-
-    protected ArrayList<String> p2wal = new ArrayList<>();
-
-    protected ArrayList<String> p3wal = new ArrayList<>();
+    private static final String P1 = "p1_string";
+    private static final String P2 = "p2_string";
+    private static final String P3 = "p3_string";
 
 
-    /*
-    public static DisplayFragment newInstance(Bundle haikuBundle) {
+    // This is a public method that the Activity can use to communicate
+    // directly with this Fragment
+    public void messageFromMainMenuFragment(Bundle message) {
 
-        Bundle args = new Bundle();
+        String p1 = message.getString("p1_string");
 
-        ArrayList<String> p1wal = new ArrayList<>();
+        String p2 = message.getString("p2_string");
 
-        ArrayList<String> p2wal = new ArrayList<>();
+        String p3 = message.getString("p3_string");
 
-        ArrayList<String> p3wal = new ArrayList<>();
+        mHaikuLine1Text.setText(p1);
 
-        args.putStringArrayList(P1_WAL, p1wal);
+        mHaikuLine2Text.setText(p2);
 
-        args.putStringArrayList(P2_WAL, p2wal);
-
-        args.putStringArrayList(P3_WAL, p3wal);
-
-        DisplayFragment fragment = new DisplayFragment();
-
-        fragment.setArguments(args);
-
-        return fragment;
+        mHaikuLine3Text.setText(p3);
     }
-    */
 
 
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(LOG_TAG, "DisplayFragment.onSaveInstanceState");
+        outState.putString("phrase1", mHaikuLine1Text.getText().toString());
+        outState.putString("phrase2", mHaikuLine2Text.getText().toString());
+        outState.putString("phrase3", mHaikuLine3Text.getText().toString());
+    }
 
-    // This event fires 1st, before creation of fragment or any views
-    // The onAttach method is called when the Fragment instance is associated with an Activity.
-    // This does not mean the Activity is fully initialized.
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -81,7 +74,7 @@ public class DisplayFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        //setRetainInstance(true);
         Log.d(LOG_TAG, "DisplayFragment.onCreate");
 
     }
@@ -91,43 +84,12 @@ public class DisplayFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(LOG_TAG, "DisplayFragment.onCreateView");
+
         View view = inflater.inflate(R.layout.fragment_display_haiku, container, false);
 
         mHaikuLine1Text = (TextView) view.findViewById(R.id.display_haiku_line1);
         mHaikuLine2Text = (TextView) view.findViewById(R.id.display_haiku_line2);
         mHaikuLine3Text = (TextView) view.findViewById(R.id.display_haiku_line3);
-
-        //p1wal = getArguments().getStringArrayList("p1wal");
-
-        //p2wal = getArguments().getStringArrayList("p2wal");
-
-        //p3wal = getArguments().getStringArrayList("p3wal");
-
-        StringBuilder sb1 = new StringBuilder();
-        StringBuilder sb2 = new StringBuilder();
-        StringBuilder sb3 = new StringBuilder();
-
-        for (String s: p1wal) {
-            sb1.append(s);
-            sb1.append(" ");
-        }
-
-        mHaikuLine1Text.setText(sb1.toString());
-
-
-        for (String s: p2wal) {
-            sb1.append(s);
-            sb2.append(" ");
-        }
-
-        mHaikuLine2Text.setText(sb2.toString());
-
-        for (String s: p3wal) {
-            sb3.append(s);
-            sb3.append(" ");
-        }
-
-        mHaikuLine3Text.setText(sb3.toString());
 
         return view;
     }
@@ -150,6 +112,7 @@ public class DisplayFragment extends Fragment {
         mHaikuLine1Text.setText(null);
         mHaikuLine2Text.setText(null);
         mHaikuLine3Text.setText(null);
+
     }
 
     // This method is called after the parent Activity's onCreate() method has completed.
@@ -159,7 +122,19 @@ public class DisplayFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Log.d(LOG_TAG, "DisplayFragment.onActivityCreated");
+
+        if (savedInstanceState != null) {
+            String s1 = savedInstanceState.getString("phrase1");
+            String s2 = savedInstanceState.getString("phrase2");
+            String s3 = savedInstanceState.getString("phrase3");
+
+            mHaikuLine1Text.setText(s1);
+            mHaikuLine2Text.setText(s2);
+            mHaikuLine3Text.setText(s3);
+        }
+
     }
+
 
 }
 

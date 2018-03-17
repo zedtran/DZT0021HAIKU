@@ -22,8 +22,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.NoSuchElementException;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 
 
 
@@ -43,9 +41,16 @@ public class MainMenuFragment extends Fragment {
     private Button mDisplayHaikuButton;
     private Toast mToast;
     private HaikuModel mHaiku;
-
     private static final String LOG_TAG = MainMenuFragment.class.getSimpleName() + "_TAG";
     private int lastKnownSyllableCount = -1;
+
+    // Interface Callback listener
+    private OnDisplayFragmentSelectedListener mCallback;
+
+    // Container Activity must implement this interface
+    public interface OnDisplayFragmentSelectedListener {
+        void onDisplayFragmentSelected(Bundle bundle);
+    }
 
 
     // This event fires 2nd, before views are created for the fragment
@@ -208,68 +213,13 @@ public class MainMenuFragment extends Fragment {
         mDisplayHaikuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
-                DisplayFragment fragment = new DisplayFragment();
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, fragment);
-                fragmentTransaction.addToBackStack("mainMenuFragment");
-                fragmentTransaction.commit();
-                */
 
-               /*
-                Bundle haikuBundle = new Bundle();
-
-                List<Pair<String, Integer>> first = mHaiku.getP1Pair();
-                List<Pair<String, Integer>> second = mHaiku.getP2Pair();
-                List<Pair<String, Integer>> third = mHaiku.getP3Pair();
-
-                ArrayList<String> p1wordArrList = new ArrayList<>();
-                ArrayList<String> p2wordArrList = new ArrayList<>();
-                ArrayList<String> p3wordArrList = new ArrayList<>();
-
-                if(first.size() > 0) {
-
-                    for (Pair<String, Integer> p: first) {
-                        p1wordArrList.add(p.first);
-                    }
-
-                    haikuBundle.putStringArrayList("p1wal", p1wordArrList);
-                }
-
-                if(second.size() > 0) {
-
-                    for (Pair<String, Integer> p: second) {
-                        p2wordArrList.add(p.first);
-                    }
-                    haikuBundle.putStringArrayList("p2wal", p2wordArrList);
-                }
-
-                if(third.size() > 0) {
-
-                    for (Pair<String, Integer> p: third) {
-                        p3wordArrList.add(p.first);
-                    }
-
-                    haikuBundle.putStringArrayList("p3wal", p3wordArrList);
-                }
-
-                */
-
-                DisplayFragment displayFragment = new DisplayFragment();
-
-                displayFragment.mHaikuLine1Text.setText(mHaiku.getPhraseOneAsString());
-                displayFragment.mHaikuLine2Text.setText(mHaiku.getPhraseTwoAsString());
-                displayFragment.mHaikuLine3Text.setText(mHaiku.getPhraseThreeAsString());
-
-
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.fragment_container, displayFragment);
-                fragmentTransaction.addToBackStack("mainMenuFragment");
-                fragmentTransaction.commit();
-
-
+                // Pass the message to our host activity for the Haiku we want to display
+                Bundle bundle = new Bundle();
+                bundle.putString("p1_string", mHaiku.getPhraseOneAsString());
+                bundle.putString("p2_string", mHaiku.getPhraseTwoAsString());
+                bundle.putString("p3_string", mHaiku.getPhraseThreeAsString());
+                mCallback.onDisplayFragmentSelected(bundle);
 
             }
         });
@@ -476,6 +426,13 @@ public class MainMenuFragment extends Fragment {
 
         Log.d(LOG_TAG, "MainMenuFragment.onAttach");
 
+        if (context instanceof OnDisplayFragmentSelectedListener) {
+            mCallback = (OnDisplayFragmentSelectedListener) context;
+        }
+        else {
+            throw new RuntimeException(context.toString() + " must implement OnDisplayFragmentSelectedListener");
+        }
+
 
     }
 
@@ -500,6 +457,7 @@ public class MainMenuFragment extends Fragment {
         mDeleteLastWordButton.setOnClickListener(null);
         mStartOverButton.setOnClickListener(null);
         mDisplayHaikuButton.setOnClickListener(null);
+        mCallback = null;
 
     }
 

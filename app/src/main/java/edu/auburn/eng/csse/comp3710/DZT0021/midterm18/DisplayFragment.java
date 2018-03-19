@@ -3,14 +3,11 @@ package edu.auburn.eng.csse.comp3710.DZT0021.midterm18;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.util.Log;
-import android.view.KeyEvent;
-
 
 
 /**
@@ -33,20 +30,16 @@ public class DisplayFragment extends Fragment {
     private static final String P3 = "p3_string";
 
 
+
     // This is a public method that the Activity can use to communicate
-    // directly with this Fragment
+    // directly with this Fragment. (MainMenuFragment --> MainActivity --> DisplayFragment)
     public void messageFromMainMenuFragment(Bundle message) {
 
         String p1 = message.getString("p1_string");
-
         String p2 = message.getString("p2_string");
-
         String p3 = message.getString("p3_string");
-
         mHaikuLine1Text.setText(p1);
-
         mHaikuLine2Text.setText(p2);
-
         mHaikuLine3Text.setText(p3);
     }
 
@@ -74,7 +67,7 @@ public class DisplayFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setRetainInstance(true);
+        setRetainInstance(true);
         Log.d(LOG_TAG, "DisplayFragment.onCreate");
 
     }
@@ -90,6 +83,8 @@ public class DisplayFragment extends Fragment {
         mHaikuLine1Text = (TextView) view.findViewById(R.id.display_haiku_line1);
         mHaikuLine2Text = (TextView) view.findViewById(R.id.display_haiku_line2);
         mHaikuLine3Text = (TextView) view.findViewById(R.id.display_haiku_line3);
+
+
 
         return view;
     }
@@ -113,6 +108,7 @@ public class DisplayFragment extends Fragment {
         mHaikuLine2Text.setText(null);
         mHaikuLine3Text.setText(null);
 
+
     }
 
     // This method is called after the parent Activity's onCreate() method has completed.
@@ -134,6 +130,18 @@ public class DisplayFragment extends Fragment {
         }
 
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
+
 
 
 }

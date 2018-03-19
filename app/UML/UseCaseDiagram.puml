@@ -1,0 +1,60 @@
+@startuml
+title DZT0021HAIKU USE CASE DIAGRAM
+
+' :Main Admin: as Admin
+' (Use the application) as (Use)
+
+User ---> (Start Haiku)
+
+rectangle {
+
+usecase "Choose Adjectives" as UC1
+usecase "Choose nouns" as UC2
+usecase "Choose verbs" as UC3
+usecase "Choose other" as UC4
+
+(Start Haiku) --> UC1
+(Start Haiku) --> UC2
+(Start Haiku) --> UC3
+(Start Haiku) --> UC4
+
+UC1 ...> (select spinner): <<includes>>
+UC1 ...> (select add to Haiku): <<includes>>
+UC2 ...> (select spinner): <<includes>>
+UC2 ...> (select add to Haiku): <<includes>>
+UC3 ...> (select spinner): <<includes>>
+UC3 ...> (select add to Haiku): <<includes>>
+UC4 ...> (select spinner): <<includes>>
+UC4 ...> (select add to Haiku): <<includes>>
+
+}
+
+(select spinner) <--> (choose word)
+
+(select add to Haiku) --> (display haiku)
+(select add to Haiku) --> (start over)
+
+(start over) --> (Start Haiku)
+
+(display haiku) --> (select add to Haiku)
+
+
+' note right of Admin : This is an example.
+
+
+/'
+note right of (Use)
+A note can also
+be on several lines
+end note
+'/
+
+
+/'
+note "This note is connected\nto several objects." as N2
+(Start) .. N2
+N2 .. (Use)
+'/
+
+
+@enduml

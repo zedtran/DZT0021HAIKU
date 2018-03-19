@@ -1,0 +1,42 @@
+@startsalt
+{
+{T
++ Choose Nound, Verbs, Adjectives, or Other
+++  Goal
++++ To choose an appropriate noun
+++ Entry conditions
++++ The app must be started
+++ Scenario
++++ User starts off by seeing radio button choices for
+++++ Adjectives
+++++ Verbs
+++++ Nouns
+++++ Others
++++ When user selects the radio button of choice
+++++ User either adds to the Haiku
+++++ OR chooses another radio button
+++++ OR select word from dropdown list
++++ IF User adds to the Haiku
+++++ Word appears on list in sequential order
++++ IF user chooses another radio button
+++++ They will populate another list of appropriate words from dropdown
++++ User then chooses to Display or Start over
+++++ IF user chooses to start over, the app returns to radio button
+++++ options
+++++ IF user chooses to display haiku
++++++ A new frame appears with currently selected words
+++++++ User either selects back button or terminates the application
++++++++ IF User terminates, the application closes and we end
++++++++ IF User presses back button, we return to the main menu page
+++ Exceptions
++++ The app is terminated before displaying the Haiku
+++ Exit conditions
++++ Successful Exit Conditions
+++++ The app is terminated manually
++++ Failure Exit Conditions
+++++ The app crashes for some unknown reason!
+}
+---
+
+}
+@endsalt

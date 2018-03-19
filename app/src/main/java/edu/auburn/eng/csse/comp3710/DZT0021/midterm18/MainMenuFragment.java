@@ -3,12 +3,14 @@ package edu.auburn.eng.csse.comp3710.DZT0021.midterm18;
 /**
  * Created by donaldtran on 3/15/18.
  */
+import java.nio.charset.MalformedInputException;
 import java.util.ArrayList;
 import java.util.List;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -53,6 +55,7 @@ public class MainMenuFragment extends Fragment {
     }
 
 
+
     // This event fires 2nd, before views are created for the fragment
     // The onCreate method is called when the Fragment instance is being created, or re-created.
     // Use onCreate for any standard setup that does not require the activity to be fully created
@@ -92,7 +95,7 @@ public class MainMenuFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                MainMenuFragment fragment = (MainMenuFragment)getFragmentManager().findFragmentById(R.id.fragment_container);
+                MainMenuFragment fragment = (MainMenuFragment) getFragmentManager().findFragmentById(R.id.fragment_container);
 
                 getFragmentManager().beginTransaction().detach(fragment).attach(fragment).commit();
 
@@ -214,11 +217,15 @@ public class MainMenuFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+
                 // Pass the message to our host activity for the Haiku we want to display
                 Bundle bundle = new Bundle();
                 bundle.putString("p1_string", mHaiku.getPhraseOneAsString());
                 bundle.putString("p2_string", mHaiku.getPhraseTwoAsString());
                 bundle.putString("p3_string", mHaiku.getPhraseThreeAsString());
+
+
+                // Callback to our MainHaikuActivity
                 mCallback.onDisplayFragmentSelected(bundle);
 
             }
@@ -374,20 +381,14 @@ public class MainMenuFragment extends Fragment {
                 // Starting with phrase 1 to 3
                 if(mHaiku.getphraseOneSyllableCount() < 5 ) {
 
-
                     // proceed to add the selected word
                     addToHaikuButtonEvents(selectedWord, selectionSyllableCount, arrayReference, resID, crossReference);
-
 
                 }
                 else if (mHaiku.getphraseTwoSyllableCount() < 7) {
 
-
-
                     // proceed to add the selected word
                     addToHaikuButtonEvents(selectedWord, selectionSyllableCount, arrayReference, resID, crossReference);
-
-
 
                 }
                 else if (mHaiku.getphraseThreeSyllableCount() < 5) {
@@ -398,9 +399,6 @@ public class MainMenuFragment extends Fragment {
                 }
             }
         });
-
-
-
 
         // The fragment to return
         return view;
@@ -581,6 +579,7 @@ public class MainMenuFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
         Log.d(LOG_TAG, "MainMenuFragment.onSaveInstanceState");
 
         List<Pair<String, Integer>> first = mHaiku.getP1Pair();
@@ -640,6 +639,7 @@ public class MainMenuFragment extends Fragment {
         outState.putBoolean("adjectivesIsChecked", mAdjectivesButton.isChecked());
         outState.putBoolean("othersIsChecked", mOthersButton.isChecked());
         outState.putInt("lastKnownSyllableCount", lastKnownSyllableCount);
+
     }
 
 

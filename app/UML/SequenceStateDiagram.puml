@@ -1,0 +1,60 @@
+
+@startuml
+title DZT0021 Haiku
+actor User
+participant MainMenu
+participant Display
+participant WordCategory
+group SD: Haiku
+
+User --> MainMenu: start
+loop while !(word category)
+WordCategory --> MainMenu: Adjectives
+WordCategory --> MainMenu: Verbs
+WordCategory --> MainMenu: Nouns
+WordCategory --> MainMenu: Others
+
+MainMenu --> MainMenu: Decision
+
+MainMenu <--> Display
+MainMenu --> StartOver
+
+opt end
+Display --> Finish
+end
+Finish <--> StartOver
+
+@enduml
+
+
+/'
+
+title Snake SSD
+actor SnakeCharmer
+participant Snake
+actor HISSS
+group SD:  Snake
+
+SnakeCharmer -> Snake: start
+loop while !(hit wall or bite self)
+SnakeCharmer <-- Snake: SnakePit
+note right: UC: See SnakePit
+SnakeCharmer <-- Snake: Snake
+SnakeCharmer <-- Snake: Apple
+else
+
+opt charm
+SnakeCharmer -> Snake: turn
+note right: UC: Beguile Snake
+end
+end
+SnakeCharmer <-- Snake: Score
+note right: UC: See length
+Snake -> HISSS: transmitLength
+note right: UC: Publish length
+end
+
+'/
+
+@enduml
+

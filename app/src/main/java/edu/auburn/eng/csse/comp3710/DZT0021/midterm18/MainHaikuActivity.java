@@ -12,6 +12,10 @@ public class MainHaikuActivity extends AppCompatActivity implements MainMenuFrag
     private static final String LOG_TAG = MainHaikuActivity.class.getSimpleName() + "_TAG";
     private static final String MAIN_MENU_TAG = "main";
     private static final String DISPLAY_TAG = "display";
+    private static int modulus = 2;
+    private int backCallCount = 1;
+
+
     MainMenuFragment mainMenuFragment;
     DisplayFragment displayFragment;
 
@@ -38,24 +42,25 @@ public class MainHaikuActivity extends AppCompatActivity implements MainMenuFrag
             if (savedInstanceState != null) {
                 return;
             }
+            else {
+                // Create a new MainMenuFragment/display fragment to be placed in the activity layout
+                mainMenuFragment = new MainMenuFragment();
+                displayFragment = new DisplayFragment();
 
-            // Create a new Fragment to be placed in the activity layout
-            mainMenuFragment = new MainMenuFragment();
+                // In case this activity was started with special instructions from an
+                // Intent, pass the Intent's extras to the fragment as arguments
+                mainMenuFragment.setArguments(getIntent().getExtras());
+                displayFragment.setArguments(getIntent().getExtras());
 
-            // In case this activity was started with special instructions from an
-            // Intent, pass the Intent's extras to the fragment as arguments
-            mainMenuFragment.setArguments(getIntent().getExtras());
-
-            // Add the fragment to the 'fragment_container' FrameLayout
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, mainMenuFragment).commit();
+                // Add the fragment to the 'fragment_container' FrameLayout
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, mainMenuFragment, MAIN_MENU_TAG).commit();
 
 
-            displayFragment = new DisplayFragment();
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, displayFragment, DISPLAY_TAG).commit();
 
-            displayFragment.setArguments(getIntent().getExtras());
-
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, displayFragment, DISPLAY_TAG).commit();
+            }
 
         }
 
@@ -77,6 +82,7 @@ public class MainHaikuActivity extends AppCompatActivity implements MainMenuFrag
     protected void onDestroy() {
         Log.d(LOG_TAG, "Activity.onDestroy");
         super.onDestroy();
+
     }
     @Override
     protected void onResume() {
@@ -92,6 +98,7 @@ public class MainHaikuActivity extends AppCompatActivity implements MainMenuFrag
     public void onConfigurationChanged(Configuration newConfig) {
         Log.d(LOG_TAG, "Activity.onConfigurationChanged");
         super.onConfigurationChanged(newConfig);
+
     }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -109,14 +116,41 @@ public class MainHaikuActivity extends AppCompatActivity implements MainMenuFrag
     public void onDisplayFragmentSelected(Bundle bundle) {
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        //ft.detach(mainMenuFragment).addToBackStack(MAIN_MENU_TAG);
+        ft.replace(R.id.fragment_container, displayFragment).commit();
 
-        ft.detach(mainMenuFragment).addToBackStack(MAIN_MENU_TAG).commit();
 
         // This is the message that was sent from MainMenuFragment
         displayFragment.messageFromMainMenuFragment(bundle);
 
 
+    }
 
+
+
+    @Override
+    public void onBackPressed() {
+
+        if (mainMenuFragment != null && displayFragment != null) {
+
+            if (backCallCount % modulus == 1) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                //ft.detach(displayFragment).addToBackStack(DISPLAY_TAG);
+                ft.replace(R.id.fragment_container, mainMenuFragment).commit();
+                backCallCount++;
+            }
+            else if(backCallCount % modulus == 0) {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                //ft.detach(displayFragment).addToBackStack(DISPLAY_TAG);
+                ft.replace(R.id.fragment_container, displayFragment).commit();
+                backCallCount++;
+            }
+        }
+        else {
+            super.onBackPressed();
+        }
 
     }
+
+
 }

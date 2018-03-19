@@ -1,0 +1,83 @@
+@startuml
+
+
+class MainHaikuActivity {
+        - static final String LOG_TAG = MainHaikuActivity.class.getSimpleName() + "_TAG";
+        - static final String MAIN_MENU_TAG = "main";
+        - static final String DISPLAY_TAG = "display";
+        - static int modulus = 2;
+        - int backCallCount = 1;
+        + MainMenuFragment mainMenuFragment;
+        + DisplayFragment displayFragment;
+
+}
+class DisplayFragment {
+        # TextView mHaikuLine1Text;
+        # TextView mHaikuLine2Text;
+        # TextView mHaikuLine3Text;
+        - static final String LOG_TAG = DisplayFragment.class.getSimpleName() + "_TAG";
+        - static final String P1 = "p1_string";
+        - static final String P2 = "p2_string";
+        - static final String P3 = "p3_string";
+}
+class HaikuModel {
+        - List<Pair<String, Integer>> phrase1pair;
+        - List<Pair<String, Integer>> phrase2pair;
+        - List<Pair<String, Integer>> phrase3pair;
+}
+class MainMenuFragment {
+    - RadioButton mAdjectivesButton;
+    - RadioButton mNounsButton;
+    - RadioButton mVerbsButton;
+    - RadioButton mOthersButton;
+    - Spinner mSpinner;
+    - Button mAddToHaikuButton;
+    - TextView mHaikuLine1;
+    - TextView mHaikuLine2;
+    - TextView mHaikuLine3;
+    - Button mDeleteLastWordButton;
+    - Button mStartOverButton;
+    - Button mDisplayHaikuButton;
+    - Toast mToast;
+    - HaikuModel mHaiku;
+    - static final String LOG_TAG = MainMenuFragment.class.getSimpleName() + "_TAG";
+    - int lastKnownSyllableCount = -1;
+}
+
+MainHaikuActivity --> MainMenuFragment
+MainMenuFragment --> DisplayFragment
+MainMenuFragment <--> HaikuModel
+
+interface OnDisplayFragmentSelectedListener
+MainMenuFragment --> OnDisplayFragmentSelectedListener
+OnDisplayFragmentSelectedListener --> MainHaikuActivity
+MainHaikuActivity --> DisplayFragment
+
+/'
+
+abstract class AbstractList
+abstract AbstractCollection
+interface List
+interface Collection
+
+List <|-- AbstractList
+Collection <|-- AbstractCollection
+
+Collection <|- List
+AbstractCollection <|- AbstractList
+AbstractList <|-- ArrayList
+
+class ArrayList {
+Object[] elementData
+size()
+}
+
+enum TimeUnit {
+DAYS
+HOURS
+MINUTES
+}
+
+'/
+
+@enduml

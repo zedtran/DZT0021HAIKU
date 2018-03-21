@@ -29,18 +29,20 @@ public class DisplayFragment extends Fragment {
     private static final String P2 = "p2_string";
     private static final String P3 = "p3_string";
 
+    private String phraseOne;
+    private String phraseTwo;
+    private String phraseThree;
+
 
 
     // This is a public method that the Activity can use to communicate
     // directly with this Fragment. (MainMenuFragment --> MainActivity --> DisplayFragment)
     public void messageFromMainMenuFragment(Bundle message) {
 
-        String p1 = message.getString("p1_string");
-        String p2 = message.getString("p2_string");
-        String p3 = message.getString("p3_string");
-        mHaikuLine1Text.setText(p1);
-        mHaikuLine2Text.setText(p2);
-        mHaikuLine3Text.setText(p3);
+        phraseOne = message.getString(P1);
+        phraseTwo = message.getString(P2);
+        phraseThree = message.getString(P3);
+
     }
 
 
@@ -70,6 +72,7 @@ public class DisplayFragment extends Fragment {
         setRetainInstance(true);
         Log.d(LOG_TAG, "DisplayFragment.onCreate");
 
+
     }
 
     // The onCreateView method is called when Fragment should create its View object hierarchy,
@@ -84,7 +87,15 @@ public class DisplayFragment extends Fragment {
         mHaikuLine2Text = (TextView) view.findViewById(R.id.display_haiku_line2);
         mHaikuLine3Text = (TextView) view.findViewById(R.id.display_haiku_line3);
 
-
+        if (phraseOne != null) {
+            mHaikuLine1Text.setText(phraseOne);
+        }
+        if (phraseTwo != null) {
+            mHaikuLine2Text.setText(phraseTwo);
+        }
+        if (phraseThree != null) {
+            mHaikuLine3Text.setText(phraseThree);
+        }
 
         return view;
     }
@@ -120,6 +131,7 @@ public class DisplayFragment extends Fragment {
         Log.d(LOG_TAG, "DisplayFragment.onActivityCreated");
 
         if (savedInstanceState != null) {
+
             String s1 = savedInstanceState.getString("phrase1");
             String s2 = savedInstanceState.getString("phrase2");
             String s3 = savedInstanceState.getString("phrase3");
@@ -141,6 +153,9 @@ public class DisplayFragment extends Fragment {
         super.onStop();
 
     }
+
+
+
 
 
 

@@ -3,14 +3,13 @@ package edu.auburn.eng.csse.comp3710.DZT0021.midterm18;
 /**
  * Created by donaldtran on 3/15/18.
  */
-import java.nio.charset.MalformedInputException;
+
 import java.util.ArrayList;
 import java.util.List;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -28,22 +27,23 @@ import java.util.NoSuchElementException;
 
 
 
+
 public class MainMenuFragment extends Fragment {
-    private RadioButton mAdjectivesButton;
-    private RadioButton mNounsButton;
-    private RadioButton mVerbsButton;
-    private RadioButton mOthersButton;
-    private Spinner mSpinner;
-    private Button mAddToHaikuButton;
-    private TextView mHaikuLine1;
-    private TextView mHaikuLine2;
-    private TextView mHaikuLine3;
-    private Button mDeleteLastWordButton;
-    private Button mStartOverButton;
-    private Button mDisplayHaikuButton;
-    private Toast mToast;
-    private HaikuModel mHaiku;
-    private static final String LOG_TAG = MainMenuFragment.class.getSimpleName() + "_TAG";
+    protected RadioButton mAdjectivesButton;
+    protected RadioButton mNounsButton;
+    protected RadioButton mVerbsButton;
+    protected RadioButton mOthersButton;
+    protected Spinner mSpinner;
+    protected Button mAddToHaikuButton;
+    protected TextView mHaikuLine1;
+    protected TextView mHaikuLine2;
+    protected TextView mHaikuLine3;
+    protected Button mDeleteLastWordButton;
+    protected Button mStartOverButton;
+    protected Button mDisplayHaikuButton;
+    protected Toast mToast;
+    protected HaikuModel mHaiku;
+    protected static final String LOG_TAG = MainMenuFragment.class.getSimpleName() + "_TAG";
     private int lastKnownSyllableCount = -1;
 
     // Interface Callback listener
@@ -51,9 +51,16 @@ public class MainMenuFragment extends Fragment {
 
     // Container Activity must implement this interface
     public interface OnDisplayFragmentSelectedListener {
-        void onDisplayFragmentSelected(Bundle bundle);
+        void onDisplayFragmentSelected(Bundle messageToDisplay);
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+
+    }
 
 
     // This event fires 2nd, before views are created for the fragment
@@ -91,12 +98,127 @@ public class MainMenuFragment extends Fragment {
         mDisplayHaikuButton = (Button) view.findViewById(R.id.display_button);
 
 
+        if(savedInstanceState != null) {
+
+            int resIDtoResize = -1; // The appropriate resource ID
+
+            boolean spinnerStatus = savedInstanceState.getBoolean("SpinnerStatus");
+            boolean wordsExist = savedInstanceState.getBoolean("WordsExist");
+            boolean adderStatus = savedInstanceState.getBoolean("AdderStatus");
+            boolean verbsButtonStatus = savedInstanceState.getBoolean("verbsIsChecked");
+            boolean nounsButtonStatus = savedInstanceState.getBoolean("nounsIsChecked");
+            boolean adjectivesButtonStatus = savedInstanceState.getBoolean("adjectivesIsChecked");
+            boolean othersButtonStatus = savedInstanceState.getBoolean("othersIsChecked");
+            int lastSyllableCount = savedInstanceState.getInt("lastKnownSyllableCount");
+
+            if(verbsButtonStatus) {
+                radioButtonEvents(R.array.verbs);
+                mVerbsButton.setChecked(true);
+                resIDtoResize = R.array.verbs;
+            }
+            else if(nounsButtonStatus) {
+                radioButtonEvents(R.array.nouns);
+                mNounsButton.setChecked(true);
+                resIDtoResize = R.array.nouns;
+            }
+            else if(adjectivesButtonStatus) {
+                radioButtonEvents(R.array.adjectives);
+                mAdjectivesButton.setChecked(true);
+                resIDtoResize = R.array.adjectives;
+            }
+            else if(othersButtonStatus) {
+                radioButtonEvents(R.array.other);
+                mOthersButton.setChecked(true);
+                resIDtoResize = R.array.other;
+            }
+
+
+            if(spinnerStatus) {
+                mSpinner.setEnabled(true);
+                mSpinner.setVisibility(View.VISIBLE);
+            }
+
+            if(adderStatus) {
+                mAddToHaikuButton.setEnabled(true);
+                mAddToHaikuButton.setVisibility(View.VISIBLE);
+            } else {
+                mAddToHaikuButton.setVisibility(View.INVISIBLE);
+            }
+
+            if(wordsExist) {
+                mDeleteLastWordButton.setEnabled(true);
+                mStartOverButton.setEnabled(true);
+                mDisplayHaikuButton.setEnabled(true);
+                mDeleteLastWordButton.setVisibility(View.VISIBLE);
+                mStartOverButton.setVisibility(View.VISIBLE);
+                mDisplayHaikuButton.setVisibility(View.VISIBLE);
+                mAddToHaikuButton.setText(R.string.add_to_haiku_button_text);
+            }
+
+            ArrayList<String> p1wal = savedInstanceState.getStringArrayList("p1wal");
+            ArrayList<Integer> p1cal = savedInstanceState.getIntegerArrayList("p1cal");
+            ArrayList<String> p2wal = savedInstanceState.getStringArrayList("p2wal");
+            ArrayList<Integer> p2cal = savedInstanceState.getIntegerArrayList("p2cal");
+            ArrayList<String> p3wal = savedInstanceState.getStringArrayList("p3wal");
+            ArrayList<Integer> p3cal = savedInstanceState.getIntegerArrayList("p3cal");
+
+            List<Pair<String, Integer>> p1 = new ArrayList<>();
+            List<Pair<String, Integer>> p2 = new ArrayList<>();
+            List<Pair<String, Integer>> p3 = new ArrayList<>();
+
+            Pair<String, Integer> pair;
+
+            if(p1wal != null && p1cal != null) {
+                for(int i = 0; i < p1wal.size(); i++) {
+                    pair = new Pair<>(p1wal.get(i), p1cal.get(i));
+                    p1.add(i, pair);
+                }
+
+                mHaiku.setPhrase1pair(p1);
+                mHaikuLine1.setText(mHaiku.getPhraseOneAsString());
+            }
+
+            if(p2wal != null && p2cal != null) {
+                for(int i = 0; i < p2wal.size(); i++) {
+                    pair = new Pair<>(p2wal.get(i), p2cal.get(i));
+                    p2.add(i, pair);
+                }
+
+                mHaiku.setPhrase2pair(p2);
+                mHaikuLine2.setText(mHaiku.getPhraseTwoAsString());
+            }
+
+            if(p3wal != null && p3cal != null) {
+                for(int i = 0; i < p3wal.size(); i++) {
+                    pair = new Pair<>(p3wal.get(i), p3cal.get(i));
+                    p3.add(i, pair);
+                }
+
+                mHaiku.setPhrase3pair(p3);
+                mHaikuLine3.setText(mHaiku.getPhraseThreeAsString());
+            }
+
+            if(mHaiku.getphraseThreeSyllableCount() + lastSyllableCount > 5 && mHaiku.getphraseThreeSyllableCount() > 0 && resIDtoResize != -1) {
+                radioButtonEvents(resIDtoResize);
+            } else if(mHaiku.getphraseTwoSyllableCount() + lastSyllableCount > 7 && mHaiku.getphraseTwoSyllableCount() > 0 && resIDtoResize != -1) {
+                radioButtonEvents(resIDtoResize);
+            } else if(mHaiku.getphraseOneSyllableCount() + lastSyllableCount > 5 && mHaiku.getphraseOneSyllableCount() > 0 && resIDtoResize != -1) {
+                radioButtonEvents(resIDtoResize);
+            }
+
+        }
+
+
+
+
+        //////////////////////////
+        // Begin Event Handlers //
+        //////////////////////////
         mStartOverButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 MainMenuFragment fragment = (MainMenuFragment) getFragmentManager().findFragmentById(R.id.fragment_container);
-
                 getFragmentManager().beginTransaction().detach(fragment).attach(fragment).commit();
 
                 if(mOthersButton.isChecked()) {
@@ -219,14 +341,14 @@ public class MainMenuFragment extends Fragment {
 
 
                 // Pass the message to our host activity for the Haiku we want to display
-                Bundle bundle = new Bundle();
-                bundle.putString("p1_string", mHaiku.getPhraseOneAsString());
-                bundle.putString("p2_string", mHaiku.getPhraseTwoAsString());
-                bundle.putString("p3_string", mHaiku.getPhraseThreeAsString());
+                Bundle messageToDisplay = new Bundle();
+                messageToDisplay.putString("p1_string", mHaiku.getPhraseOneAsString());
+                messageToDisplay.putString("p2_string", mHaiku.getPhraseTwoAsString());
+                messageToDisplay.putString("p3_string", mHaiku.getPhraseThreeAsString());
 
 
                 // Callback to our MainHaikuActivity
-                mCallback.onDisplayFragmentSelected(bundle);
+                mCallback.onDisplayFragmentSelected(messageToDisplay);
 
             }
         });
@@ -431,7 +553,6 @@ public class MainMenuFragment extends Fragment {
             throw new RuntimeException(context.toString() + " must implement OnDisplayFragmentSelectedListener");
         }
 
-
     }
 
 
@@ -445,6 +566,9 @@ public class MainMenuFragment extends Fragment {
         super.onDetach();
 
         Log.d(LOG_TAG, "MainMenuFragment.onDetach");
+
+        /*
+
         mNounsButton.setOnClickListener(null);
         mVerbsButton.setOnClickListener(null);
         mAdjectivesButton.setOnClickListener(null);
@@ -457,122 +581,15 @@ public class MainMenuFragment extends Fragment {
         mDisplayHaikuButton.setOnClickListener(null);
         mCallback = null;
 
+        */
+
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         Log.d(LOG_TAG, "MainMenuFragment.onActivityCreated");
 
-        int resIDtoResize = -1;
-
-        if(savedInstanceState != null) {
-
-            boolean spinnerStatus = savedInstanceState.getBoolean("SpinnerStatus");
-            boolean wordsExist = savedInstanceState.getBoolean("WordsExist");
-            boolean adderStatus = savedInstanceState.getBoolean("AdderStatus");
-            boolean verbsButtonStatus = savedInstanceState.getBoolean("verbsIsChecked");
-            boolean nounsButtonStatus = savedInstanceState.getBoolean("nounsIsChecked");
-            boolean adjectivesButtonStatus = savedInstanceState.getBoolean("adjectivesIsChecked");
-            boolean othersButtonStatus = savedInstanceState.getBoolean("othersIsChecked");
-            int lastSyllableCount = savedInstanceState.getInt("lastKnownSyllableCount");
-
-            if(verbsButtonStatus) {
-                radioButtonEvents(R.array.verbs);
-                mVerbsButton.setChecked(true);
-                resIDtoResize = R.array.verbs;
-            }
-            else if(nounsButtonStatus) {
-                radioButtonEvents(R.array.nouns);
-                mNounsButton.setChecked(true);
-                resIDtoResize = R.array.nouns;
-            }
-            else if(adjectivesButtonStatus) {
-                radioButtonEvents(R.array.adjectives);
-                mAdjectivesButton.setChecked(true);
-                resIDtoResize = R.array.adjectives;
-            }
-            else if(othersButtonStatus) {
-                radioButtonEvents(R.array.other);
-                mOthersButton.setChecked(true);
-                resIDtoResize = R.array.other;
-            }
-
-
-            if(spinnerStatus) {
-                mSpinner.setEnabled(true);
-                mSpinner.setVisibility(View.VISIBLE);
-            }
-
-            if(adderStatus) {
-                mAddToHaikuButton.setEnabled(true);
-                mAddToHaikuButton.setVisibility(View.VISIBLE);
-            } else {
-                mAddToHaikuButton.setVisibility(View.INVISIBLE);
-            }
-
-            if(wordsExist) {
-                mDeleteLastWordButton.setEnabled(true);
-                mStartOverButton.setEnabled(true);
-                mDisplayHaikuButton.setEnabled(true);
-                mDeleteLastWordButton.setVisibility(View.VISIBLE);
-                mStartOverButton.setVisibility(View.VISIBLE);
-                mDisplayHaikuButton.setVisibility(View.VISIBLE);
-                mAddToHaikuButton.setText(R.string.add_to_haiku_button_text);
-            }
-
-            ArrayList<String> p1wal = savedInstanceState.getStringArrayList("p1wal");
-            ArrayList<Integer> p1cal = savedInstanceState.getIntegerArrayList("p1cal");
-            ArrayList<String> p2wal = savedInstanceState.getStringArrayList("p2wal");
-            ArrayList<Integer> p2cal = savedInstanceState.getIntegerArrayList("p2cal");
-            ArrayList<String> p3wal = savedInstanceState.getStringArrayList("p3wal");
-            ArrayList<Integer> p3cal = savedInstanceState.getIntegerArrayList("p3cal");
-
-            List<Pair<String, Integer>> p1 = new ArrayList<>();
-            List<Pair<String, Integer>> p2 = new ArrayList<>();
-            List<Pair<String, Integer>> p3 = new ArrayList<>();
-
-            Pair<String, Integer> pair;
-
-            if(p1wal != null && p1cal != null) {
-                for(int i = 0; i < p1wal.size(); i++) {
-                    pair = new Pair<>(p1wal.get(i), p1cal.get(i));
-                    p1.add(i, pair);
-                }
-
-                mHaiku.setPhrase1pair(p1);
-                mHaikuLine1.setText(mHaiku.getPhraseOneAsString());
-            }
-
-            if(p2wal != null && p2cal != null) {
-                for(int i = 0; i < p2wal.size(); i++) {
-                    pair = new Pair<>(p2wal.get(i), p2cal.get(i));
-                    p2.add(i, pair);
-                }
-
-                mHaiku.setPhrase2pair(p2);
-                mHaikuLine2.setText(mHaiku.getPhraseTwoAsString());
-            }
-
-            if(p3wal != null && p3cal != null) {
-                for(int i = 0; i < p3wal.size(); i++) {
-                    pair = new Pair<>(p3wal.get(i), p3cal.get(i));
-                    p3.add(i, pair);
-                }
-
-                mHaiku.setPhrase3pair(p3);
-                mHaikuLine3.setText(mHaiku.getPhraseThreeAsString());
-            }
-
-            if(mHaiku.getphraseThreeSyllableCount() + lastSyllableCount > 5 && mHaiku.getphraseThreeSyllableCount() > 0 && resIDtoResize != -1) {
-                radioButtonEvents(resIDtoResize);
-            } else if(mHaiku.getphraseTwoSyllableCount() + lastSyllableCount > 7 && mHaiku.getphraseTwoSyllableCount() > 0 && resIDtoResize != -1) {
-                radioButtonEvents(resIDtoResize);
-            } else if(mHaiku.getphraseOneSyllableCount() + lastSyllableCount > 5 && mHaiku.getphraseOneSyllableCount() > 0 && resIDtoResize != -1) {
-                radioButtonEvents(resIDtoResize);
-            }
-        }
 
     }
 
@@ -581,6 +598,8 @@ public class MainMenuFragment extends Fragment {
         super.onSaveInstanceState(outState);
 
         Log.d(LOG_TAG, "MainMenuFragment.onSaveInstanceState");
+
+        getActivity().getSupportFragmentManager().putFragment(outState, LOG_TAG, this);
 
         List<Pair<String, Integer>> first = mHaiku.getP1Pair();
         List<Pair<String, Integer>> second = mHaiku.getP2Pair();
@@ -819,7 +838,7 @@ public class MainMenuFragment extends Fragment {
 
     }
 
-    private void radioButtonEvents(int resID) {
+    public void radioButtonEvents(int resID) {
 
         Log.d(LOG_TAG, "MainMenuFragment.radioButtonEvents (PRIVATE METHOD)");
 
@@ -896,11 +915,8 @@ public class MainMenuFragment extends Fragment {
             }
 
             mSpinnerAdapterRes = new ArrayAdapter<>(MainMenuFragment.this.getContext(), android.R.layout.simple_list_item_1, resArr_list);
-
             mSpinnerAdapterRes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
             mSpinner.setAdapter(mSpinnerAdapterRes);
-
             mSpinnerAdapterRes.notifyDataSetChanged();
 
         }
@@ -911,7 +927,7 @@ public class MainMenuFragment extends Fragment {
     }
 
     /* Simple toast message function */
-    private void makeToast(CharSequence message) {
+    public void makeToast(CharSequence message) {
         if(mToast != null) {
             mToast.cancel();
         }

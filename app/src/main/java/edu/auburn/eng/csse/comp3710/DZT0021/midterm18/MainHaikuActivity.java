@@ -1,23 +1,25 @@
 package edu.auburn.eng.csse.comp3710.DZT0021.midterm18;
 
-import android.support.v4.app.FragmentTransaction;
+
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.content.res.Configuration;
 import android.util.Log;
 
 
-public class MainHaikuActivity extends AppCompatActivity implements MainMenuFragment.OnDisplayFragmentSelectedListener {
+public class MainHaikuActivity extends AppCompatActivity implements MainMenuFragment.OnDisplayFragmentSelectedListener, FragmentManager.OnBackStackChangedListener {
 
     private static final String LOG_TAG = MainHaikuActivity.class.getSimpleName() + "_TAG";
-    private static final String MAIN_MENU_TAG = "main";
-    private static final String DISPLAY_TAG = "display";
-    private static int modulus = 2;
-    private int backCallCount = 1;
+    private static final String MAIN_MENU_TAG = MainMenuFragment.class.getSimpleName() + "_TAG";
+    private static final String DISPLAY_TAG = DisplayFragment.class.getSimpleName() + "_TAG";
 
 
-    MainMenuFragment mainMenuFragment;
-    DisplayFragment displayFragment;
+    private Fragment defaultFragment;
+    private Fragment previousFragment;
+    private Fragment currentFragment;
+    private String currentFragmentTag;
 
 
 
@@ -32,8 +34,6 @@ public class MainHaikuActivity extends AppCompatActivity implements MainMenuFrag
 
         Log.d(LOG_TAG, "Activity.onCreate");
 
-        // Check that the activity is using the layout version with
-        // the fragment_container FrameLayout
         if (findViewById(R.id.fragment_container) != null) {
 
             // However, if we're being restored from a previous state,
@@ -42,115 +42,171 @@ public class MainHaikuActivity extends AppCompatActivity implements MainMenuFrag
             if (savedInstanceState != null) {
                 return;
             }
+
             else {
-                // Create a new MainMenuFragment/display fragment to be placed in the activity layout
-                mainMenuFragment = new MainMenuFragment();
-                displayFragment = new DisplayFragment();
 
-                // In case this activity was started with special instructions from an
-                // Intent, pass the Intent's extras to the fragment as arguments
-                mainMenuFragment.setArguments(getIntent().getExtras());
-                displayFragment.setArguments(getIntent().getExtras());
+                getSupportFragmentManager().addOnBackStackChangedListener(this);
 
-                // Add the fragment to the 'fragment_container' FrameLayout
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, mainMenuFragment, MAIN_MENU_TAG).commit();
+                MainMenuFragment firstFragment = new MainMenuFragment();
+                defaultFragment = firstFragment;  // The default fragment
 
+                currentFragmentTag = MAIN_MENU_TAG;
+                currentFragment = firstFragment;
 
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, displayFragment, DISPLAY_TAG).commit();
+                        .add(R.id.fragment_container, currentFragment, currentFragmentTag)
+                        .addToBackStack(currentFragmentTag)
+                        .commit();
 
             }
 
         }
 
-
-
     }
+
 
     @Override
     protected void onPause() {
         Log.d(LOG_TAG, "Activity.onPause");
         super.onPause();
     }
+
+
     @Override
     protected void onStop() {
         Log.d(LOG_TAG, "Activity.onStop");
         super.onStop();
     }
+
+
     @Override
     protected void onDestroy() {
         Log.d(LOG_TAG, "Activity.onDestroy");
         super.onDestroy();
 
     }
+
+
     @Override
     protected void onResume() {
         Log.d(LOG_TAG, "Activity.onResume");
         super.onResume();
     }
+
+
     @Override
     protected void onStart() {
         Log.d(LOG_TAG, "Activity.onStart");
         super.onStart();
     }
+
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         Log.d(LOG_TAG, "Activity.onConfigurationChanged");
         super.onConfigurationChanged(newConfig);
 
     }
+
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         Log.d(LOG_TAG, "Activity.onSaveInstanceState");
         super.onSaveInstanceState(outState);
         outState.putBoolean("MAKE_STATE_NOT_NULL", true);
+
+        if (currentFragment instanceof MainMenuFragment) {
+            getSupportFragmentManager().putFragment(outState, MAIN_MENU_TAG, currentFragment);
+        }
+        else if (currentFragment.isAdded()) {
+            getSupportFragmentManager().putFragment(outState, DISPLAY_TAG, currentFragment);
+        }
+
+
     }
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         Log.d(LOG_TAG, "Activity.onRestoreInstanceState");
         super.onRestoreInstanceState(savedInstanceState);
+
+        // Pull from saved instance
+        Fragment testReturnFragment = getSupportFragmentManager().getFragment(savedInstanceState, MAIN_MENU_TAG);
+
+        // An existing instance?
+        Fragment testReturnFragment2 = getSupportFragmentManager().findFragmentByTag(MAIN_MENU_TAG);
+
+        if (testReturnFragment != null) {
+            currentFragment = testReturnFragment;
+            currentFragmentTag = MAIN_MENU_TAG;
+        }
+        else if (testReturnFragment2 != null && testReturnFragment2.isAdded()) {
+            currentFragment = testReturnFragment2;
+            currentFragmentTag = MAIN_MENU_TAG;
+        }
+
     }
 
     @Override
-    public void onDisplayFragmentSelected(Bundle bundle) {
+    public void onDisplayFragmentSelected(Bundle messageToDisplay) {
+        DisplayFragment df = new DisplayFragment();
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        //ft.detach(mainMenuFragment).addToBackStack(MAIN_MENU_TAG);
-        ft.replace(R.id.fragment_container, displayFragment).commit();
+        if (currentFragment instanceof MainMenuFragment) {
+            previousFragment = currentFragment;
+            currentFragment = df;
 
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, df, DISPLAY_TAG) // changed from .replace
+                    .addToBackStack(DISPLAY_TAG).hide(previousFragment)
+                    .commit();
 
-        // This is the message that was sent from MainMenuFragment
-        displayFragment.messageFromMainMenuFragment(bundle);
+            // This is the message that was sent from MainMenuFragment
+            // This needs to go to the display Fragment now
+            df.messageFromMainMenuFragment(messageToDisplay);
 
+        }
+        else if (currentFragment instanceof DisplayFragment) {
+            currentFragment = df;
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, df, DISPLAY_TAG)
+                    .addToBackStack(DISPLAY_TAG).hide(previousFragment)
+                    .commit();
+
+            currentFragment = previousFragment;
+            previousFragment = df;
+
+            df.messageFromMainMenuFragment(messageToDisplay);
+
+        }
 
     }
 
 
+    @Override
+    public void onBackStackChanged() {
+        Log.d(LOG_TAG , "onBackStackChangedListener -> " + getSupportFragmentManager().getBackStackEntryCount());
+
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            String fragmentTag = getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1).getName();
+            currentFragment = getSupportFragmentManager().findFragmentByTag(fragmentTag);
+            currentFragmentTag = fragmentTag;
+        } else {
+            currentFragment = defaultFragment;
+        }
+    }
 
     @Override
     public void onBackPressed() {
-
-        if (mainMenuFragment != null && displayFragment != null) {
-
-            if (backCallCount % modulus == 1) {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                //ft.detach(displayFragment).addToBackStack(DISPLAY_TAG);
-                ft.replace(R.id.fragment_container, mainMenuFragment).commit();
-                backCallCount++;
-            }
-            else if(backCallCount % modulus == 0) {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                //ft.detach(displayFragment).addToBackStack(DISPLAY_TAG);
-                ft.replace(R.id.fragment_container, displayFragment).commit();
-                backCallCount++;
-            }
+        if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+            finish();
         }
         else {
             super.onBackPressed();
         }
-
     }
+
+
+
 
 
 }
